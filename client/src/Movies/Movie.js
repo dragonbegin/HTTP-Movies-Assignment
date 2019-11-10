@@ -1,48 +1,25 @@
-import React from "react";
-import axios from "axios";
+
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import MovieCard from "./MovieCard";
-export default class Movie extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      movie: null
-    };
-  }
 
-  componentDidMount() {
-    this.fetchMovie(this.props.match.params.id);
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (this.props.match.params.id !== newProps.match.params.id) {
-      this.fetchMovie(newProps.match.params.id);
-    }
-  }
-
-  fetchMovie = id => {
-    axios
-      .get(`http://localhost:5000/api/movies/${id}`)
-      .then(res => this.setState({ movie: res.data }))
-      .catch(err => console.log(err.response));
-  };
-
-  saveMovie = () => {
-    const addToSavedList = this.props.addToSavedList;
-    addToSavedList(this.state.movie);
-  };
-
+export default class MovieList extends Component {
   render() {
-    if (!this.state.movie) {
-      return <div>Loading movie information...</div>;
-    }
-
+    if (!this.props.movies) return <h2>Loading...</h2>
     return (
-      <div className="save-wrapper">
-        <MovieCard movie={this.state.movie} />
-        <div className="save-button" onClick={this.saveMovie}>
-          Save
-        </div>
+      <div className="movie-list">
+        {this.props.movies.map(movie => (
+          <MovieDetails key={movie.id} movie={movie} />
+        ))}
       </div>
     );
   }
+}
+
+function MovieDetails({ movie }) {
+  return (
+    <Link to={`/movies/${movie.id}`}>
+      <MovieCard movie={movie} />
+    </Link>
+  );
 }
